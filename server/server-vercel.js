@@ -4,10 +4,11 @@ const cors = require('cors');
 const connectDB = require('./config/db');
 const userRoutes = require('./routes/auth');
 const dotenv = require('dotenv');
-const adminRoutes = require('./routes/adminRoutes')
-const taskRoute = require('./routes/taskRoutes')
-const taskReviewRoutes = require('./routes/ReviewAndFeedback/reviewRoutes')
-const finalReportRoutes = require('./routes/ReviewAndFeedback/finalReviewRoutes')
+const adminRoutes = require('./routes/adminRoutes');
+const taskRoute = require('./routes/taskRoutes');
+const taskReviewRoutes = require('./routes/ReviewAndFeedback/reviewRoutes');
+const finalReportRoutes = require('./routes/ReviewAndFeedback/finalReviewRoutes');
+const { initBucket } = require('./config/cloudStorage'); // Import the new cloud storage module
 
 dotenv.config();
 
@@ -18,14 +19,25 @@ const app = express();
 app.use(express.json());
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
-    ? ['bug-dashboard-frontend.vercel.app'] 
+    ? ['https://bug-dashboard-frontend.vercel.app', 'http://localhost:5173'] 
     : '*',
   credentials: true
 }));
 app.use(bodyParser.json());
 
-// Connect to Database
-connectDB();
+// Database middleware - make sure to connect to DB before handling requests
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    console.error('Database connection error:', error);
+    res.status(500).json({ message: 'Database connection error' });
+  }
+});
+
+// Initialize GridFS bucket
+app.use(initBucket);
 
 // Routes
 app.use('/api/auth', userRoutes);
@@ -37,6 +49,22 @@ app.use("/api/finalReport", finalReportRoutes);
 // Base route
 app.get('/api', (req, res) => {
   res.json({ message: 'Bug Dashboard API is running' });
+});
+
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ status: 'healthy' });
+});
+
+// Handle 404s
+app.use((req, res) => {
+  res.status(404).json({ message: 'Route not found' });
+});
+
+// Error handler
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: 'Something went wrong!', error: err.message });
 });
 
 // For local development
