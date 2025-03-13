@@ -34,7 +34,12 @@ export default function Admin() {
 
   const approveUser = async (pendingUserId) => {
     try {
-      await axios.post(`${API_BASE_URL}/auth/approve-user`, { pendingUserId });
+      await axios.post(`${API_BASE_URL}/auth/approve-user`, { pendingUserId }, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
       setPendingUsers((prevUsers) => prevUsers.filter((user) => user._id !== pendingUserId));
       console.log("User approved successfully!");
     } catch (error) {
@@ -44,7 +49,12 @@ export default function Admin() {
 
   const rejectUser = async (userId) => {
     try {
-      await axios.post(`${API_BASE_URL}/auth/reject-user`, { userId });
+      await axios.post(`${API_BASE_URL}/auth/reject-user`, { userId }, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
       setPendingUsers((prevUsers) => prevUsers.filter((user) => user._id !== userId));
     } catch (error) {
       console.error("Error rejecting user", error);
