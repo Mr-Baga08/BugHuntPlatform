@@ -33,7 +33,7 @@ const Signin = ({ setUserRole }) => {
 
     try {
       let response;
-        response = await axios.post(`${API_BASE_URL}/auth/login`, {  email, password });
+        response = await axios.post(`${API_BASE_URL}/auth/login`, { email, password });
     //   consol
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("userRole", role);
