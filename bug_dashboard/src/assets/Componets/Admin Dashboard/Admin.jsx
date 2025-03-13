@@ -16,7 +16,12 @@ export default function Admin() {
 
   const fetchPendingUsers = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/auth/pending-users`);
+      const response = await axios.get(`${API_BASE_URL}/auth/pending-users`, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
       console.log("Fetched Users:", response.data); 
       setPendingUsers(Array.isArray(response.data) ? response.data : []);
   
