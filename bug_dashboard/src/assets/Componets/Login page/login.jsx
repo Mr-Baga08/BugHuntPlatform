@@ -30,13 +30,29 @@ const Login = ({ setUserRole }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
-
+  
     try {
       let response;
       if (role === "admin") {
-        response = await axios.post(`${API_BASE_URL}/admin/login`, { email, password });
+        response = await axios.post(`${API_BASE_URL}/admin/login`, 
+          { email, password },
+          {
+            withCredentials: true,
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          }
+        );
       } else {
-        response = await axios.post(`${API_BASE_URL}/auth/register`, { username ,  email, password, role });
+        response = await axios.post(`${API_BASE_URL}/auth/register`, 
+          { username, email, password, role },
+          {
+            withCredentials: true,
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          }
+        );
       }
 
       localStorage.setItem("token", response.data.token);
