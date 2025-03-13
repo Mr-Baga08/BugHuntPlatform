@@ -17,9 +17,11 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? ['bug-dashboard-frontend.vercel.app'] 
-    : '*',
+  origin: [
+    'https://bug-hunt-platform-4mjb.vercel.app',
+    'https://bug-hunt-platform.vercel.app', 
+    'http://localhost:5173'
+  ],
   credentials: true
 }));
 app.use(bodyParser.json());
