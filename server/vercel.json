@@ -8,12 +8,14 @@
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "/server-vercel.js"
-    },
-    {
       "src": "/(.*)",
-      "dest": "/server-vercel.js"
+      "dest": "/server-vercel.js",
+      "headers": {
+        "Access-Control-Allow-Origin": "https://bug-hunt-platform-4mjb.vercel.app",
+        "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,PATCH,OPTIONS",
+        "Access-Control-Allow-Headers": "X-Requested-With,Content-Type,Authorization",
+        "Access-Control-Allow-Credentials": "true"
+      }
     }
   ]
 }
