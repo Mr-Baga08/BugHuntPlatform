@@ -18,12 +18,15 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? ['https://bug-dashboard-frontend.vercel.app', 'http://localhost:5173'] 
-    : '*',
+  origin: [
+    'https://bug-hunt-platform-4mjb.vercel.app',
+    'https://bug-hunt-platform.vercel.app',
+    'http://localhost:5173'
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
 }));
-app.use(bodyParser.json());
 
 // Database middleware - make sure to connect to DB before handling requests
 app.use(async (req, res, next) => {
