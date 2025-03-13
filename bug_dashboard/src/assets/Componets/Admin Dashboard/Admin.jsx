@@ -17,7 +17,6 @@ export default function Admin() {
   const fetchPendingUsers = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/auth/pending-users`);
-<<<<<<< HEAD
       console.log("Fetched Users:", response.data); 
       setPendingUsers(Array.isArray(response.data) ? response.data : []);
   
@@ -25,12 +24,6 @@ export default function Admin() {
     } catch (error) {
       console.error("Error fetching pending users", error);
       setPendingUsers([]); 
-=======
-      setPendingUsers(Array.isArray(response.data) ? response.data : []);
-    } catch (error) {
-      console.error("Error fetching pending users", error);
-      setPendingUsers([]);
->>>>>>> c9016e2 (Your commit message)
     }
   };
 
