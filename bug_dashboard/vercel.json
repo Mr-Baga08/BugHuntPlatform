@@ -12,7 +12,7 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "https://server-five-murex-39.vercel.app/"
+      "dest": "https://bug-dashboard-backend.vercel.app/api/$1"
     },
     {
       "src": "/static/(.*)",
