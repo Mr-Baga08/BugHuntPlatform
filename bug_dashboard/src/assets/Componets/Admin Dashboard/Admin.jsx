@@ -1,11 +1,6 @@
 import React, { useState, useEffect } from "react";
-<<<<<<< HEAD
 import { Moon, Sun, Search, Edit, Eye, LogOut, Check, X, HomeIcon } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-=======
-import { Moon, Sun, Search, Edit, Eye, LogOut, Check, X } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
->>>>>>> c9016e2 (Your commit message)
 import axios from "axios";
 import API_BASE_URL from "./config";
 
