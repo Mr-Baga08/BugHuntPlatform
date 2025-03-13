@@ -12,7 +12,7 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "https://bug-hunt-platform.vercel.app"
+      "dest": "https://bug-hunt-platform.vercel.app/api/$1"
     },
     {
       "src": "/static/(.*)",
