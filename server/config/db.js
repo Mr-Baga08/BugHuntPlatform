@@ -3,21 +3,30 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
+let cachedConnection = null;
+
 const connectDB = async () => {
+    if (cachedConnection) {
+        return cachedConnection;
+    }
+
     try {
-        await mongoose.connect(process.env.MONGO_URI, {
-            // useNewUrlParser: true,
-            // useUnifiedTopology: true,
+        const connection = await mongoose.connect(process.env.MONGO_URI, {
+            serverSelectionTimeoutMS: 5000, // Suitable for serverless
+            maxPoolSize: 10 // Limit the number of connections
         });
-        console.log('MongoDB connected');
         
+        console.log('MongoDB connected');
+        cachedConnection = connection;
+        return connection;
     } catch (error) {
         console.error('MongoDB connection failed:', error.message);
-        process.exit(1);
+        // Don't exit process on serverless functions
+        if (process.env.NODE_ENV !== 'production') {
+            process.exit(1);
+        }
+        throw error;
     }
 };
 
 module.exports = connectDB;
-
-
-
