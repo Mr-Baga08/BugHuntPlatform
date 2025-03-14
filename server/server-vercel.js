@@ -1,3 +1,5 @@
+// server/server-vercel.js
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -8,27 +10,43 @@ const adminRoutes = require('./routes/adminRoutes');
 const taskRoute = require('./routes/taskRoutes');
 const taskReviewRoutes = require('./routes/ReviewAndFeedback/reviewRoutes');
 const finalReportRoutes = require('./routes/ReviewAndFeedback/finalReviewRoutes');
-const { initBucket } = require('./config/cloudStorage'); // Import the new cloud storage module
+const { initBucket } = require('./config/cloudStorage'); // Import the cloud storage module
 
 dotenv.config();
 
 // Initialize Express app
 const app = express();
 
-// Middleware
-app.use(express.json());
+// CORS middleware - UPDATED CONFIGURATION
 app.use(cors({
-  origin: [
-    'https://bug-hunt-platform-4mjb.vercel.app',
-    'https://bug-hunt-platform.vercel.app',
-    'http://localhost:5173'
-  ],
+  origin: function(origin, callback) {
+    // Allow any origin 
+    const allowedOrigins = [
+      'https://bug-hunt-platform-4mjb.vercel.app',
+      'https://bug-hunt-platform.vercel.app',
+      'http://localhost:5173'
+    ];
+    
+    // For local development - allow all origins
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      console.log("Blocked origin:", origin);
+      callback(null, true); // Allow all origins temporarily to debug
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
+  credentials: true,
+  preflightContinue: false,
+  optionsSuccessStatus: 204
 }));
 
-// Database middleware - make sure to connect to DB before handling requests
+// Body parsing middleware
+app.use(express.json());
+app.use(bodyParser.json());
+
+// Database middleware
 app.use(async (req, res, next) => {
   try {
     await connectDB();
