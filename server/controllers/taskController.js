@@ -38,19 +38,32 @@ exports.deleteTask = async (req, res) => {
     }
 };
     
+
 exports.updateTaskStatus = async (req, res) => {
     try {
         const { status, updatedBy } = req.body;
         const { taskId } = req.params;
-        // console.log("swaponil here");
+        
+        // Validate status
+        const allowedStatuses = ["Unclaimed", "In Progress", "Completed", "Reviewed"];
+        if (!allowedStatuses.includes(status)) {
+            return res.status(400).json({ message: "Invalid status value" });
+        }
 
         const updatedTask = await taskService.updateTaskStatus(taskId, status, updatedBy);
-        const updatedTaskChange = await taskService.addTaskChange(taskId, status, updatedBy);
-        if (!updatedTask) return res.status(404).json({ message: "Task not found" });
+        if (!updatedTask) {
+            return res.status(404).json({ message: "Task not found" });
+        }
         
-        res.status(200).json({ message: "Task status updated successfully", updatedTask });
+        // Track task change history
+        await taskService.addTaskChange(taskId, status, updatedBy);
+        
+        res.status(200).json({ 
+            message: "Task status updated successfully", 
+            updatedTask 
+        });
     } catch (error) {
-        // console.log(error)
+        console.error("Error updating task status:", error);
         res.status(500).json({ error: error.message });
     }
 };
