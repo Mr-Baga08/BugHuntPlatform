@@ -8,6 +8,7 @@ import Coach from "./assets/Componets/Coach Dashboard/coach";
 import Protected from "./App/Common/Auth/Protected";
 import AdminBoard from "./assets/Componets/Admin Dashboard/AdminDashboard";
 import Tool from "./assets/Componets/Tool/tool";
+import CreateTask from "./assets/Componets/Admin Dashboard/CreateTask";
 
 function App() {
   const [userRole, setUserRole] = useState(localStorage.getItem("userRole"));
@@ -62,6 +63,12 @@ function App() {
         <Route path="/tool/:taskId" element={
           <Protected>
             <Tool />
+          </Protected>
+        } />
+        
+        <Route path="/create-task" element={
+          <Protected>
+            <CreateTask />
           </Protected>
         } />
         
