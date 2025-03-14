@@ -1,15 +1,17 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-export default function Protected({children}){
-    const navigate = useNavigate(); // Fixed: Added parentheses to call the hook
+const Protected = ({ children }) => {
+  const navigate = useNavigate();
+  
+  useEffect(() => {
     const user = localStorage.getItem("userName");
-    
-    useEffect(() => {
-        if(!user || user === ""){
-            navigate('/signin');
-        }
-    }, [user, navigate]); // Added proper dependencies
-    
-    return (<div>{children}</div>);
-}
+    if (!user || user === "") {
+      navigate('/signin');
+    }
+  }, [navigate]);
+
+  return <>{children}</>;
+};
+
+export default Protected;
