@@ -15,7 +15,7 @@ const { initBucket } = require('./config/cloudStorage'); // Import the cloud sto
 dotenv.config();
 
 // Initialize Express app
-const app = express();
+// const app = express();
 
 // Enable preflight requests for all routes
 app.options('*', cors());
