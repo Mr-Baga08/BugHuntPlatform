@@ -17,6 +17,9 @@ dotenv.config();
 // Initialize Express app
 const app = express();
 
+// Enable preflight requests for all routes
+app.options('*', cors());
+
 // CORS middleware - UPDATED CONFIGURATION
 app.use(cors({
   origin: function(origin, callback) {
