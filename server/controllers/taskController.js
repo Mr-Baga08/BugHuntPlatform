@@ -2,12 +2,31 @@ const taskService = require("../Services/taskServices");
 
 exports.createTask = async (req, res) => {
     try {
-        const task = await taskService.createTask(req.body);
+        // Validate required fields
+        const { projectName, industry, toolLink } = req.body;
+        if (!projectName || !industry || !toolLink) {
+            return res.status(400).json({ message: "Missing required fields" });
+        }
+        
+        // Validate URL format if needed
+        if (!/^(http|https):\/\//.test(toolLink)) {
+            return res.status(400).json({ message: "Tool link must be a valid URL" });
+        }
+        
+        // Add default values if not provided
+        const taskData = {
+            ...req.body,
+            taskId: req.body.taskId || `BH-${Math.floor(1000 + Math.random() * 9000)}`,
+            status: req.body.status || "Unclaimed",
+            lastUpdated: Date.now()
+        };
+        
+        const task = await taskService.createTask(taskData);
         res.status(201).json({ message: "Task created successfully", task });
     } catch (error) {
+        console.error("Error creating task:", error);
         res.status(500).json({ error: error.message });
     }
-};
 
 exports.getAllTasks = async (req, res) => {
     try {
