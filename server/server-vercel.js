@@ -8,48 +8,34 @@ const adminRoutes = require('./routes/adminRoutes');
 const taskRoute = require('./routes/taskRoutes');
 const taskReviewRoutes = require('./routes/ReviewAndFeedback/reviewRoutes');
 const finalReportRoutes = require('./routes/ReviewAndFeedback/finalReviewRoutes');
-const { initBucket } = require('./config/cloudStorage'); // Import the cloud storage module
 
 dotenv.config();
 
-// Initialize Express app
 const app = express();
 
-// Basic CORS configuration for all routes
-app.use(cors({
-    origin: ['https://bug-hunt-platform-4mjb.vercel.app', 'https://bug-hunt-platform.vercel.app', 'http://localhost:5173'],
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true
-}));
-
-// Specific OPTIONS handler for the auth login endpoint
-app.options('/api/auth/login', (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', 'https://bug-hunt-platform-4mjb.vercel.app');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.status(204).end(); // Respond with no content (204) for OPTIONS
+// CRITICAL: Handle preflight requests properly
+// This middleware must come BEFORE any route definitions
+app.use((req, res, next) => {
+  // Always set these headers for all responses
+  res.header('Access-Control-Allow-Origin', 'https://bug-hunt-platform-4mjb.vercel.app');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  
+  // Handle OPTIONS method - respond immediately with 200
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  
+  next();
 });
 
-// Body parsing middleware
+// Regular middleware
 app.use(express.json());
 app.use(bodyParser.json());
 
-// Database middleware
-app.use(async (req, res, next) => {
-  try {
-    await connectDB();
-    next();
-  } catch (error) {
-    console.error('Database connection error:', error);
-    res.status(500).json({ message: 'Database connection error' });
-  }
-});
-
-// Initialize GridFS bucket if available
-if (initBucket) {
-  app.use(initBucket);
-}
+// Connect to database
+connectDB();
 
 // Routes
 app.use('/api/auth', userRoutes);
@@ -58,34 +44,14 @@ app.use("/api/task", taskRoute);
 app.use("/api/taskReview", taskReviewRoutes);
 app.use("/api/finalReport", finalReportRoutes);
 
-// Base route
-app.get('/api', (req, res) => {
-  res.json({ message: 'Bug Dashboard API is running' });
+// Root route
+app.get("/", (req, res) => {
+  res.status(200).json({ message: "Server is running" });
 });
 
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.status(200).json({ status: 'healthy' });
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
 
-// Handle 404s
-app.use((req, res) => {
-  res.status(404).json({ message: 'Route not found' });
-});
-
-// Error handler
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ message: 'Something went wrong!', error: err.message });
-});
-
-// For local development
-if (process.env.NODE_ENV !== 'production') {
-  const PORT = process.env.PORT || 3000;
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
-}
-
-// For Vercel serverless functions
 module.exports = app;
