@@ -1,5 +1,3 @@
-// server/server-vercel.js
-
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -15,35 +13,27 @@ const { initBucket } = require('./config/cloudStorage'); // Import the cloud sto
 dotenv.config();
 
 // Initialize Express app
-// const app = express();
+const app = express();
 
-// Enable preflight requests for all routes
-app.options('*', cors());
-
-// CORS middleware - UPDATED CONFIGURATION
-app.use(cors({
-  origin: function(origin, callback) {
-    // Allow any origin 
-    const allowedOrigins = [
-      'https://bug-hunt-platform-4mjb.vercel.app',
-      'https://bug-hunt-platform.vercel.app',
-      'http://localhost:5173'
-    ];
-    
-    // For local development - allow all origins
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      console.log("Blocked origin:", origin);
-      callback(null, true); // Allow all origins temporarily to debug
-    }
-  },
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+// CORS configuration
+const corsOptions = {
+  origin: [
+    'https://bug-hunt-platform-4mjb.vercel.app',
+    'https://bug-hunt-platform.vercel.app',
+    'http://localhost:5173'
+  ],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
   preflightContinue: false,
   optionsSuccessStatus: 204
-}));
+};
+
+// Enable OPTIONS preflight for all routes
+app.options('*', cors(corsOptions));
+
+// Enable CORS with the options
+app.use(cors(corsOptions));
 
 // Body parsing middleware
 app.use(express.json());
@@ -60,8 +50,10 @@ app.use(async (req, res, next) => {
   }
 });
 
-// Initialize GridFS bucket
-app.use(initBucket);
+// Initialize GridFS bucket if available
+if (initBucket) {
+  app.use(initBucket);
+}
 
 // Routes
 app.use('/api/auth', userRoutes);
