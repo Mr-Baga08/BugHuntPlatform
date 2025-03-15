@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const connectDB = require('./config/db');
-const userRoutes = require('./routes/auth');
+const authRoutes = require('./routes/auth');  // Fixed: renamed to authRoutes to match file
 const dotenv = require('dotenv');
 const adminRoutes = require('./routes/adminRoutes');
 const taskRoute = require('./routes/taskRoutes');
@@ -37,7 +37,7 @@ app.use(bodyParser.json());
 connectDB();
 
 // Routes
-app.use('/api/auth', userRoutes);
+app.use('/api/auth', authRoutes);  // Fixed: use authRoutes instead of userRoutes
 app.use("/api/admin", adminRoutes);
 app.use("/api/task", taskRoute);
 app.use("/api/taskReview", taskReviewRoutes);
