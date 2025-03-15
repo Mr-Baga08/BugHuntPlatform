@@ -15,25 +15,21 @@ dotenv.config();
 // Initialize Express app
 const app = express();
 
-// CORS configuration
-const corsOptions = {
-  origin: [
-    'https://bug-hunt-platform-4mjb.vercel.app',
-    'https://bug-hunt-platform.vercel.app',
-    'http://localhost:5173'
-  ],
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true,
-  preflightContinue: false,
-  optionsSuccessStatus: 204
-};
+// Basic CORS configuration for all routes
+app.use(cors({
+    origin: ['https://bug-hunt-platform-4mjb.vercel.app', 'https://bug-hunt-platform.vercel.app', 'http://localhost:5173'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+}));
 
-// Enable OPTIONS preflight for all routes
-app.options('*', cors(corsOptions));
-
-// Enable CORS with the options
-app.use(cors(corsOptions));
+// Specific OPTIONS handler for the auth login endpoint
+app.options('/api/auth/login', (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', 'https://bug-hunt-platform-4mjb.vercel.app');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.status(204).end(); // Respond with no content (204) for OPTIONS
+});
 
 // Body parsing middleware
 app.use(express.json());
