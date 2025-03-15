@@ -55,7 +55,7 @@ export default function TaskDisplayView({ title, role }) {
           throw new Error("No authentication token found");
         }
 
-        const response = await fetch("http://localhost:3000/api/task", {
+        const response = await fetch('${API_BASE_URL}/api/task', {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -135,7 +135,7 @@ export default function TaskDisplayView({ title, role }) {
   const handleStatusChange = async (newStatus, taskId) => {
     try {
       const response = await fetch(
-        `http://localhost:3000/api/task/update-status/${taskId}`,
+        '${API_BASE_URL}/api/task/update-status/${taskId}',
         {
           method: "PATCH",
           headers: {
