@@ -4,11 +4,10 @@ const API_BASE_URL = process.env.NODE_ENV === 'production'
   ? "https://bug-hunt-platform.vercel.app/api" 
   : "http://localhost:3000/api";
 
-// Modify axios configuration to include credentials
+// Configure axios with proper CORS credentials
 const configureAxios = (axios) => {
-  // Don't set this to true when frontend and backend are on different domains
-  // as it requires very specific CORS settings
-  axios.defaults.withCredentials = false;
+  // Set request configurations
+  axios.defaults.withCredentials = true;
   
   // Add request interceptor
   axios.interceptors.request.use(
@@ -16,7 +15,7 @@ const configureAxios = (axios) => {
       // Get token from localStorage
       const token = localStorage.getItem('token');
       
-      // If token exists, add it to the Authorization header
+      // If token exists, add to Authorization header
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
@@ -26,22 +25,17 @@ const configureAxios = (axios) => {
     (error) => Promise.reject(error)
   );
   
-  // Add response interceptor to handle common errors
+  // Add response interceptor for error handling
   axios.interceptors.response.use(
     (response) => response,
     (error) => {
-      // Handle CORS errors
-      if (error.message === 'Network Error') {
-        console.error('A network error occurred. This could be a CORS issue.');
-      }
-      
-      // Handle authentication errors
       if (error.response && error.response.status === 401) {
-        console.error('Authentication error');
-        // Optionally redirect to login
-        // window.location.href = '/signin';
+        // Redirect to login on auth errors
+        localStorage.removeItem('token');
+        localStorage.removeItem('userRole');
+        localStorage.removeItem('userName');
+        window.location.href = '/signin';
       }
-      
       return Promise.reject(error);
     }
   );
