@@ -6,7 +6,9 @@ const API_BASE_URL = process.env.NODE_ENV === 'production'
 
 // Modify axios configuration to include credentials
 const configureAxios = (axios) => {
-  axios.defaults.withCredentials = true;
+  // Don't set this to true when frontend and backend are on different domains
+  // as it requires very specific CORS settings
+  axios.defaults.withCredentials = false;
   
   // Add request interceptor
   axios.interceptors.request.use(
