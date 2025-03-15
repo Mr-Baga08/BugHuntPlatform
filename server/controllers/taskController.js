@@ -27,6 +27,7 @@ exports.createTask = async (req, res) => {
         console.error("Error creating task:", error);
         res.status(500).json({ error: error.message });
     }
+};
 
 exports.getAllTasks = async (req, res) => {
     try {
@@ -56,7 +57,6 @@ exports.deleteTask = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
-    
 
 exports.updateTaskStatus = async (req, res) => {
     try {
